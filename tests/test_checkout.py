@@ -34,3 +34,22 @@ def test_missing_postal_code(logged_in_page):
     checkout.enter_details("firstname", "lastname", "")
     checkout.click_continue()
     assert "Postal Code is required" in checkout.read_error_message()
+
+@pytest.mark.checkout
+def test_missing_last_name(logged_in_page):
+    inv = Inventory(logged_in_page)
+    inv.add_item_to_cart(ITEM_NUMBERS)
+    cart = inv.go_to_cart()
+    checkout = cart.click_checkout()
+    checkout.enter_details("firstname", "", "50000")
+    checkout.click_continue()
+    assert "Last Name is required" in checkout.read_error_message()
+
+@pytest.mark.checkout
+def test_cancel_returns_to_cart(logged_in_page):
+    inv = Inventory(logged_in_page)
+    inv.add_item_to_cart(ITEM_NUMBERS)
+    cart = inv.go_to_cart()
+    checkout = cart.click_checkout()
+    checkout.click_cancel()
+    assert logged_in_page.url.endswith("/cart.html")
